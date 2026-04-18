@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'text-dark': '#1a1a1a',
+                        'text-muted': '#4a4a4a',
+                    },
+                    fontSize: {
+                        'tiny': '0.65rem',
+                        'xs': '0.75rem',
+                        'sm': '0.8rem',
+                        'base': '0.9rem',
+                        'lg': '1rem',
+                        'xl': '1.15rem',
+                        '2xl': '1.35rem',
+                        '3xl': '1.75rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* A4 Page Dimensions - STRICT */
+        :root {
+            --page-width: 210mm;
+            --page-height: 296mm;
+        }
+
+        /* --- TEXT WRAPPING UTILITIES --- */
+        .force-wrap {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .preserve-lines {
+            white-space: pre-line;
+        }
+
+        /* --- THEME SYSTEM (COLORS) --- */
+        .theme-blue {
+            --bg-accent: #E0F7FA;
+            --bg-dark: #1e3a8a;
+            --text-primary: #003366;
+            --text-secondary: #004d99;
+            --border-accent: #bfdbfe;
+        }
+
+        .theme-green {
+            --bg-accent: #ecfdf5;
+            --bg-dark: #064e3b;
+            --text-primary: #064e3b;
+            --text-secondary: #047857;
+            --border-accent: #a7f3d0;
+        }
+
+        .theme-purple {
+            --bg-accent: #faf5ff;
+            --bg-dark: #581c87;
+            --text-primary: #581c87;
+            --text-secondary: #7e22ce;
+            --border-accent: #d8b4fe;
+        }
+
+        .theme-slate {
+            --bg-accent: #f1f5f9;
+            --bg-dark: #1e293b;
+            --text-primary: #334155;
+            --text-secondary: #475569;
+            --border-accent: #cbd5e1;
+        }
+
+        .theme-rose {
+            --bg-accent: #fff1f2;
+            --bg-dark: #881337;
+            --text-primary: #881337;
+            --text-secondary: #be123c;
+            --border-accent: #fecdd3;
+        }
+
+        .theme-amber {
+            --bg-accent: #fffbeb;
+            --bg-dark: #78350f;
+            --text-primary: #78350f;
+            --text-secondary: #92400e;
+            --border-accent: #fde68a;
+        }
+
+        .theme-indigo {
+            --bg-accent: #e0e7ff;
+            --bg-dark: #312e81;
+            --text-primary: #312e81;
+            --text-secondary: #4338ca;
+            --border-accent: #c7d2fe;
+        }
+
+        .theme-teal {
+            --bg-accent: #f0fdfa;
+            --bg-dark: #134e4a;
+            --text-primary: #134e4a;
+            --text-secondary: #0d9488;
+            --border-accent: #99f6e4;
+        }
+
+        /* --- TEMPLATE SYSTEM (LAYOUTS) --- */
+
+        /* 1. MODERN (Header Top, Sidebar Left) */
+        .template-modern {
+            display: grid;
+            grid-template-columns: 32% 68%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "sidebar main";
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .template-modern .resume-header {
+            background-color: var(--bg-accent);
+            border-bottom: 1px solid var(--border-accent);
+        }
+
+        .template-modern .resume-sidebar {
+            background-color: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .template-modern .resume-main {
+            background-color: white;
+        }
+
+        .template-modern h1 {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 2. CLASSIC */
+        .template-classic {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "main sidebar";
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .template-classic .resume-header {
+            border-bottom: 2px solid var(--text-primary);
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .template-classic .resume-sidebar {
+            background-color: white;
+            border-left: 1px solid #e2e8f0;
+            padding-left: 20px;
+        }
+
+        .template-classic .resume-main {
+            background-color: white;
+            padding-right: 20px;
+        }
+
+        .template-classic h3 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .template-classic .contact-row {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* 3. BOLD (FIXED) */
+        .template-bold {
+            display: grid;
+            grid-template-columns: 30% 70%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "sidebar main";
+            font-family: 'Roboto', 'Arial', sans-serif;
+        }
+
+        .template-bold .resume-header {
+            background-color: white;
+            border-bottom: 4px solid var(--text-primary);
+            text-align: left;
+            padding-left: 2rem;
+        }
+
+        .template-bold .resume-sidebar {
+            background-color: var(--bg-dark);
+            color: white;
+        }
+
+        /* Fix for headers invisibility: Force white color and override opacity */
+        .template-bold .resume-sidebar h3 {
+            color: white !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+            opacity: 1 !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* General text in bold sidebar is white */
+        .template-bold .resume-sidebar p,
+        .template-bold .resume-sidebar li,
+        .template-bold .resume-sidebar i {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* FIX FOR SKILLS CHIPS: Force Dark Text on the White Chips */
+        .template-bold #preview-skills span {
+            color: var(--text-primary) !important;
+            opacity: 1 !important;
+        }
+
+        .template-bold .resume-main {
+            background-color: white;
+        }
+
+        .template-bold .contact-row {
+            justify-content: flex-start;
+            padding-left: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* 4. FUNCTIONAL */
+        .template-functional {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "main sidebar";
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+        }
+
+        .template-functional .resume-header {
+            background-color: var(--bg-accent);
+            text-align: left;
+            padding-left: 2.5rem;
+        }
+
+        .template-functional .resume-sidebar {
+            background-color: #f3f4f6;
+            border-left: none;
+        }
+
+        .template-functional .resume-main {
+            background-color: white;
+            padding-right: 2rem;
+        }
+
+        .template-functional .contact-row {
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        /* 5. MINIMALIST */
+        .template-minimal {
+            display: grid;
+            grid-template-columns: 28% 72%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "sidebar main";
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .template-minimal .resume-header {
+            background-color: white;
+            text-align: left;
+            padding-left: 0;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            margin: 0 2rem;
+            width: auto;
+        }
+
+        .template-minimal .resume-sidebar {
+            background-color: white;
+            padding-right: 1.5rem;
+            border-right: 1px solid transparent;
+        }
+
+        .template-minimal .resume-main {
+            background-color: white;
+            padding-left: 1.5rem;
+        }
+
+        .template-minimal h1 {
+            font-weight: 300;
+            font-size: 2.5rem;
+            color: black;
+        }
+
+        .template-minimal h2,
+        .template-minimal h3 {
+            color: black;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .template-minimal .contact-row {
+            justify-content: flex-start;
+            padding-left: 0;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        /* 6. ORIGINAL: The First Layout (Full Left Sidebar, Header in Main) */
+        .template-original {
+            display: grid;
+            grid-template-columns: 32% 68%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main";
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .template-original .resume-header {
+            grid-area: header;
+            background-color: white;
+            border-bottom: 2px solid #f3f4f6;
+            padding: 2.5rem 2rem 1rem 2rem;
+            text-align: left;
+            display: block;
+            /* Reset flex */
+        }
+
+        .template-original .resume-sidebar {
+            grid-area: sidebar;
+            background-color: var(--bg-accent);
+            border-right: 1px solid var(--border-accent);
+            height: 100%;
+        }
+
+        .template-original .resume-main {
+            grid-area: main;
+            background-color: white;
+            padding-top: 1rem;
+        }
+
+        /* Specific tweaks for Original Layout */
+        .template-original .contact-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .template-original h1 {
+            font-size: 2.2rem;
+        }
+
+        /* 7. PROFESSIONAL (Sidebar Right + Accent Background) */
+        .template-professional {
+            display: grid;
+            grid-template-columns: 68% 32%;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: "header header" "main sidebar";
+            font-family: 'Inter', sans-serif;
+        }
+
+        .template-professional .resume-header {
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 2.5rem;
+        }
+
+        .template-professional .resume-header h1,
+        .template-professional .resume-header p,
+        .template-professional .resume-header div {
+            color: white !important;
+        }
+
+        .template-professional .resume-sidebar {
+            background-color: var(--bg-accent);
+            border-left: 1px solid var(--border-accent);
+        }
+
+        .template-professional .resume-main {
+            background-color: white;
+            padding: 2rem;
+        }
+
+        /* 8. ACCENT (Single Column with Left Border) */
+        .template-accent {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Raleway', sans-serif;
+        }
+
+        .template-accent .resume-header {
+            text-align: center;
+            border-bottom: 4px solid var(--text-primary);
+            margin: 0 2rem;
+            padding: 2rem 0;
+        }
+
+        .template-accent .resume-sidebar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            background: #fdfdfd;
+            border-bottom: 1px solid #eee;
+            margin: 1rem 2rem;
+            padding: 1rem;
+        }
+
+        .template-accent .resume-sidebar > div {
+            border-left: 3px solid var(--text-secondary);
+            padding-left: 10px;
+        }
+
+        .template-accent .resume-main {
+            padding: 1rem 2rem;
+        }
+
+        .template-accent section {
+            margin-bottom: 2rem;
+            border-left: 2px solid var(--border-accent);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .template-accent section h2 {
+            position: absolute;
+            left: -10px;
+            background: white;
+            padding-right: 10px;
+        }
+
+        /* 9. SLEEK (Full Dark Sidebar) */
+        .template-sleek {
+            display: grid;
+            grid-template-columns: 35% 65%;
+            grid-template-rows: 1fr;
+            grid-template-areas: "sidebar main";
+            font-family: 'Inter', sans-serif;
+            min-height: var(--page-height);
+        }
+
+        .template-sleek .resume-header {
+            grid-area: sidebar;
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .template-sleek .resume-header h1,
+        .template-sleek .resume-header p {
+            color: white !important;
+        }
+
+        .template-sleek .resume-sidebar {
+            grid-area: sidebar;
+            background-color: var(--bg-dark);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 2rem 3rem 2rem;
+            margin-top: 180px; /* Offset for header */
+        }
+
+        .template-sleek .resume-sidebar h3 {
+            color: white !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .template-sleek .resume-main {
+            grid-area: main;
+            background-color: white;
+            padding: 3rem 2.5rem;
+        }
+
+        .template-sleek .contact-row {
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .template-sleek .contact-row i {
+            color: white !important;
+        }
+
+
+        /* --- RESPONSIVE TEMPLATE WRAPPERS --- */
+        @media (max-width: 1024px) {
+            .template-modern, .template-classic, .template-bold, .template-functional, .template-minimal, .template-original, .template-professional, .template-sleek {
+                grid-template-columns: 1fr !important;
+                grid-template-areas: "header" "sidebar" "main" !important;
+            }
+
+            .template-sleek .resume-sidebar {
+                margin-top: 0 !important;
+            }
+
+            .template-original {
+                grid-template-areas: "header" "sidebar" "main" !important;
+            }
+
+            .template-accent .resume-sidebar {
+                grid-template-columns: 1fr !important;
+            }
+
+            .page-container {
+                width: 100% !important;
+                max-width: 800px;
+                margin: 0 auto;
+                height: auto !important;
+                min-height: auto !important;
+            }
+        }
+
+
+        /* Helper Classes */
+        .resume-text-primary {
+            color: var(--text-primary) !important;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .editor-pane {
+            width: 40%;
+            min-width: 350px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .preview-pane {
+            flex: 1;
+            background: #525659;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .page-container {
+            width: var(--page-width);
+            min-height: var(--page-height);
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .resume-header {
+            grid-area: header;
+            padding: 1.5rem;
+        }
+
+        .resume-sidebar {
+            grid-area: sidebar;
+            padding: 1.5rem;
+        }
+
+        .resume-main {
+            grid-area: main;
+            padding: 1.5rem;
+        }
+
+        /* UI Elements */
+        .selector-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .theme-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-btn.active {
+            box-shadow: 0 0 0 2px #2563eb;
+            transform: scale(1.1);
+        }
+
+        .template-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 1200px) {
+            .template-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .template-btn {
+            padding: 8px 4px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .template-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .template-btn.active {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        /* Form Styling */
+        .form-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .form-section h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #4b5563;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-add {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border: 1px dashed #0ea5e9;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn-remove {
+            color: #ef4444;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .item-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 0mm;
+            }
+
+            body {
+                height: auto;
+                overflow: visible;
+            }
+
+            .app-container {
+                display: block;
+                height: auto;
+            }
+
+            .editor-pane {
+                display: none !important;
+            }
+
+            .preview-pane {
+                display: block;
+                padding: 0;
+                background: white;
+                height: auto;
+                overflow: visible;
+            }
+
+            .page-container {
+                width: 210mm;
+                height: 297mm;
+                box-shadow: none;
+                margin: 0;
+            }
+
+            .resume-header,
+            .resume-sidebar,
+            .resume-main {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .editor-pane {
+                width: 100%;
+                height: 45vh;
+                order: 2;
+            }
+
+            .preview-pane {
+                width: 100%;
+                height: 55vh;
+                order: 1;
+                padding: 1rem;
+            }
+
+            .page-container {
+                /* Let the internal responsive rules handle it */
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- LEFT: EDITOR FORM -->
+        <aside class="editor-pane no-print">
+            <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-800"><i
+                            class="fas fa-file-invoice text-blue-600 mr-2"></i>Resume Builder</h2>
+                    <button onclick="window.print()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm flex items-center gap-2">
+                        <i class="fas fa-download"></i> PDF
+                    </button>
+                </div>
+
+                <!-- TEMPLATE SELECTOR -->
+                <div class="mb-4">
+                    <p class="selector-label">1. Choose Layout Template</p>
+                    <div class="template-selector">
+                        <div class="template-btn" onclick="setTemplate('template-modern', this)">Modern</div>
+                        <div class="template-btn" onclick="setTemplate('template-classic', this)">Classic</div>
+                        <div class="template-btn" onclick="setTemplate('template-bold', this)">Bold</div>
+                        <div class="template-btn" onclick="setTemplate('template-functional', this)">Functional</div>
+                        <div class="template-btn" onclick="setTemplate('template-minimal', this)">Minimalist</div>
+                        <div class="template-btn" onclick="setTemplate('template-professional', this)">Professional</div>
+                        <div class="template-btn" onclick="setTemplate('template-accent', this)">Accent</div>
+                        <div class="template-btn" onclick="setTemplate('template-sleek', this)">Sleek</div>
+                        <div class="template-btn active" onclick="setTemplate('template-original', this)">Original</div>
+                    </div>
+                </div>
+
+                <!-- THEME SELECTOR -->
+                <div>
+                    <p class="selector-label">2. Choose Color Theme</p>
+                    <div class="theme-selector">
+                        <div class="theme-btn active" style="background: #003366;"
+                            onclick="setTheme('theme-blue', this)"></div>
+                        <div class="theme-btn" style="background: #064e3b;" onclick="setTheme('theme-green', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #581c87;" onclick="setTheme('theme-purple', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #334155;" onclick="setTheme('theme-slate', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #881337;" onclick="setTheme('theme-rose', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #78350f;" onclick="setTheme('theme-amber', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #312e81;" onclick="setTheme('theme-indigo', this)">
+                        </div>
+                        <div class="theme-btn" style="background: #134e4a;" onclick="setTheme('theme-teal', this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="form-container">
+                <!-- Form content injected by JS -->
+            </div>
+        </aside>
+
+        <!-- RIGHT: PREVIEW -->
+        <main class="preview-pane">
+            <!-- Resume Page -->
+            <!-- Defaulting to 'Original' layout as requested -->
+            <div id="resume-preview" class="page-container template-original theme-blue">
+
+                <!-- HEADER (Name/Role) -->
+                <header class="resume-header flex flex-col justify-center" id="header-container">
+                    <h1 class="text-3xl font-bold resume-text-primary mb-1 leading-tight force-wrap" id="preview-name">
+                        Maitry Hansotwala</h1>
+                    <p class="text-sm font-semibold resume-text-secondary uppercase tracking-wide mb-3 force-wrap"
+                        id="preview-role">MBA Candidate (Business Analytics)</p>
+
+                    <!-- Contact Row (Will be moved by JS for 'Original' layout) -->
+                    <div id="contact-row" class="contact-row flex flex-wrap gap-4 text-xs font-medium text-text-muted">
+                        <!-- Contact Content Injected via JS -->
+                    </div>
+                </header>
+
+                <!-- SIDEBAR -->
+                <div class="resume-sidebar flex flex-col gap-6" id="sidebar-container">
+                    <!-- Contact will be inserted here for Original Template -->
+
+                    <!-- Education -->
+                    <div id="sec-education">
+                        <h3 class="font-bold uppercase border-b-2 mb-3 text-xs tracking-wider resume-text-primary"
+                            style="border-color: currentColor; opacity: 0.4;">Education</h3>
+                        <div id="preview-education-list"></div>
+                    </div>
+                    <!-- Skills -->
+                    <div id="sec-skills">
+                        <h3 class="font-bold uppercase border-b-2 mb-3 text-xs tracking-wider resume-text-primary"
+                            style="border-color: currentColor; opacity: 0.4;">Skills</h3>
+                        <div class="flex flex-wrap gap-1.5" id="preview-skills"></div>
+                    </div>
+                    <!-- Interests -->
+                    <div id="sec-interests">
+                        <h3 class="font-bold uppercase border-b-2 mb-3 text-xs tracking-wider resume-text-primary"
+                            style="border-color: currentColor; opacity: 0.4;">Interests</h3>
+                        <ul class="list-none text-tiny space-y-2 font-medium" id="preview-interests"></ul>
+                    </div>
+                </div>
+
+                <!-- MAIN CONTENT -->
+                <div class="resume-main flex flex-col gap-5 text-text-dark">
+                    <!-- Profile -->
+                    <section id="sec-profile">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-wide mb-2 flex items-center gap-2 resume-text-primary">
+                            <i class="fas fa-user-tie"></i> <span id="preview-profile-title">Professional Profile</span>
+                        </h2>
+                        <p class="text-xs leading-relaxed text-justify preserve-lines force-wrap" id="preview-profile">
+                        </p>
+                    </section>
+                    <!-- Experience -->
+                    <section id="sec-experience">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-wide mb-2 flex items-center gap-2 resume-text-primary">
+                            <i class="fas fa-briefcase"></i> Work Experience
+                        </h2>
+                        <div id="preview-experience-list"></div>
+                    </section>
+                    <!-- Projects -->
+                    <section id="sec-projects">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-wide mb-2 flex items-center gap-2 resume-text-primary">
+                            <i class="fas fa-project-diagram"></i> Academic Projects
+                        </h2>
+                        <div id="preview-projects-list"></div>
+                    </section>
+                    <!-- Achievements -->
+                    <section id="sec-achievements">
+                        <h2
+                            class="text-xs font-bold uppercase tracking-wide mb-2 flex items-center gap-2 resume-text-primary">
+                            <i class="fas fa-trophy"></i> Achievements
+                        </h2>
+                        <div class="grid grid-cols-2 gap-3" id="preview-achievements-list"></div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Data ---
+        const defaultData = {
+            personal: {
+                name: "Mauli Nadiadwala",
+                role: "MBA Candidate (Business Analytics) | HR Specialisation",
+                location: "Ankleshwar, Gujarat",
+                phone: "+91-XXXXXXXXXX",
+                email: "yourmail@gmail.com",
+                linkedin: "linkedin.com/in/yourprofile",
+                profileTitle: "Professional Profile",
+                profile: "Motivated MBA student specializing in Business Analytics with a strong background in Human Resources. Proven experience in employee engagement research and HR operations through internship roles. Eager to leverage data interpretation skills to drive organizational productivity and process improvements."
+            },
+            skills: "Data Analysis, HR Analytics, Communication, Teamwork, Leadership, Research, Report Writing",
+            interests: "HR Analytics, Organisational Behaviour, Employee Engagement",
+            education: [
+                { degree: "MBA in Business Analytics", school: "SVNIT, Surat", year: "2025 – 2027", details: "" },
+                { degree: "BBA in HR Specialisation", school: "VNSGU, Surat", year: "2022 – 2025", details: "Focus: HRM" },
+                { degree: "Higher Secondary", school: "Swami Vivekanand School", year: "", details: "" }
+            ],
+            experience: [
+                { role: "HR Intern", company: "PI Industries", description: "Assisted in daily HR operations and organizational processes.\nSpearheaded initiatives focused on employee engagement.\nSupported HR team with data collection and analytics." }
+            ],
+            projects: [
+                { title: "Impact of Employee Engagement", description: "Conducted comprehensive research on engagement drivers.\nAnalysed primary data using basic statistical methods.\nFormulated practices to enhance employee performance." }
+            ],
+            achievements: [
+                { title: "Business Case Studies", description: "Active participation in solving complex cases." },
+                { title: "Presentation Skills", description: "Recognized for strong communication." }
+            ]
+        };
+
+        let data = JSON.parse(JSON.stringify(defaultData));
+
+        // --- Template & Theme Logic ---
+        function setTemplate(templateClass, btn) {
+            const preview = document.getElementById('resume-preview');
+            const contactRow = document.getElementById('contact-row');
+            const headerContainer = document.getElementById('header-container');
+            const sidebarContainer = document.getElementById('sidebar-container');
+
+            // Remove existing template classes
+            preview.classList.remove('template-modern', 'template-classic', 'template-bold', 'template-functional', 'template-minimal', 'template-original', 'template-professional', 'template-accent', 'template-sleek');
+            preview.classList.add(templateClass);
+
+            // --- LAYOUT LOGIC FOR SPECIAL TEMPLATES ---
+            if (templateClass === 'template-original' || templateClass === 'template-sleek') {
+                // Move contact to sidebar
+                sidebarContainer.insertBefore(contactRow, sidebarContainer.firstChild);
+            } else {
+                // Move contact back to header
+                headerContainer.appendChild(contactRow);
+            }
+
+            document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function setTheme(themeClass, btn) {
+            const preview = document.getElementById('resume-preview');
+            preview.classList.remove('theme-blue', 'theme-green', 'theme-purple', 'theme-slate', 'theme-rose', 'theme-amber', 'theme-indigo', 'theme-teal');
+            preview.classList.add(themeClass);
+
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // --- Helper: Capitalize Words ---
+        function capitalize(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // --- Rendering ---
+        function renderForm() {
+            const container = document.getElementById('form-container');
+            container.innerHTML = '';
+
+            // Personal
+            const pSec = createSection('Personal', 'user');
+            pSec.innerHTML += createInput('Name', 'personal.name', data.personal.name);
+            pSec.innerHTML += createInput('Title', 'personal.role', data.personal.role);
+            pSec.innerHTML += createInput('Location', 'personal.location', data.personal.location);
+            pSec.innerHTML += createInput('Phone', 'personal.phone', data.personal.phone);
+            pSec.innerHTML += createInput('Email', 'personal.email', data.personal.email);
+            pSec.innerHTML += createInput('LinkedIn (Optional)', 'personal.linkedin', data.personal.linkedin);
+            pSec.innerHTML += createInput('Section Title', 'personal.profileTitle', data.personal.profileTitle);
+            pSec.innerHTML += createTextarea('Summary', 'personal.profile', data.personal.profile);
+            container.appendChild(pSec);
+
+            // Arrays
+            renderArraySection(container, 'Education', 'education', data.education, ['degree', 'school', 'year']);
+            renderArraySection(container, 'Experience', 'experience', data.experience, ['role', 'company', 'description'], true);
+            renderArraySection(container, 'Projects', 'projects', data.projects, ['title', 'description'], true);
+
+            // Skills/Int
+            const sSec = createSection('Skills', 'lightbulb');
+            sSec.innerHTML += createInput('Skills (Separate with commas)', 'skills', data.skills);
+            sSec.innerHTML += createInput('Interests (Separate with commas)', 'interests', data.interests);
+            container.appendChild(sSec);
+
+            renderArraySection(container, 'Achievements', 'achievements', data.achievements, ['title', 'description']);
+        }
+
+        function renderArraySection(container, title, key, arr, fields, isTextArea = false) {
+            const sec = createSection(title, 'list');
+            arr.forEach((item, idx) => {
+                let html = `<div class="item-card"><div class="flex justify-between mb-2"><span class="text-xs font-bold text-gray-400">#${idx + 1}</span><span class="btn-remove" onclick="removeItem('${key}', ${idx})">Remove</span></div>`;
+                fields.forEach(f => {
+                    const path = `${key}[${idx}].${f}`;
+                    const val = item[f];
+                    let label = capitalize(f); // Capitalize Field Label
+
+                    // --- CUSTOM LABEL INSTRUCTIONS ---
+                    if (f === 'description') {
+                        label = 'Description (New Line = New Bullet)';
+                    }
+
+                    if (f === 'description' || (isTextArea && f === 'details')) {
+                        html += createTextarea(label, path, val, true);
+                    } else {
+                        html += createInput(label, path, val, true);
+                    }
+                });
+                html += `</div>`;
+                sec.innerHTML += html;
+            });
+            sec.appendChild(createAddButton('Add Item', key));
+            container.appendChild(sec);
+        }
+
+        function createSection(title, icon) {
+            const div = document.createElement('div');
+            div.className = 'form-section';
+            div.innerHTML = `<h3><i class="fas fa-${icon}"></i> ${title}</h3>`;
+            return div;
+        }
+        function createInput(l, p, v, s = false) { return `<div class="${s ? 'mb-2' : 'input-group'}"><label class="input-label">${l}</label><input class="form-input" value="${v || ''}" oninput="updateData('${p}', this.value)"></div>`; }
+        function createTextarea(l, p, v, s = false) { return `<div class="${s ? 'mb-2' : 'input-group'}"><label class="input-label">${l}</label><textarea class="form-textarea" rows="3" oninput="updateData('${p}', this.value)">${v || ''}</textarea></div>`; }
+        function createAddButton(t, k) { const b = document.createElement('button'); b.className = 'btn-add'; b.innerHTML = `+ ${t}`; b.onclick = () => addItem(k); return b; }
+
+        // --- Logic ---
+        function updateData(path, val) {
+            if (path.includes('[')) {
+                const [arr, idxPart] = path.split('[');
+                const idx = parseInt(idxPart);
+                const key = path.split('.').pop();
+                data[arr][idx][key] = val;
+            } else if (path.includes('.')) {
+                const [p, k] = path.split('.');
+                data[p][k] = val;
+            } else {
+                data[path] = val;
+            }
+            renderResume();
+        }
+        function addItem(k) {
+            const empty = { education: { degree: "", school: "", year: "", details: "" }, experience: { role: "", company: "", description: "" }, projects: { title: "", description: "" }, achievements: { title: "", description: "" } };
+            data[k].push(empty[k]);
+            renderForm(); renderResume();
+        }
+        function removeItem(k, i) { data[k].splice(i, 1); renderForm(); renderResume(); }
+
+        function renderResume() {
+            document.getElementById('preview-name').textContent = data.personal.name;
+            document.getElementById('preview-role').textContent = data.personal.role;
+
+            // --- 1. SMART CONTACT INFO ---
+            const contactContainer = document.getElementById('contact-row');
+            let contactHTML = '';
+
+            if (data.personal.location && data.personal.location.trim()) {
+                contactHTML += `<div class="flex items-center gap-1.5 force-wrap"><i class="fas fa-map-marker-alt resume-text-primary"></i> <span>${data.personal.location}</span></div>`;
+            }
+            if (data.personal.phone && data.personal.phone.trim()) {
+                contactHTML += `<div class="flex items-center gap-1.5 force-wrap"><i class="fas fa-phone resume-text-primary"></i> <span>${data.personal.phone}</span></div>`;
+            }
+            if (data.personal.email && data.personal.email.trim()) {
+                contactHTML += `<div class="flex items-center gap-1.5 force-wrap"><i class="fas fa-envelope resume-text-primary"></i> <span>${data.personal.email}</span></div>`;
+            }
+            if (data.personal.linkedin && data.personal.linkedin.trim()) {
+                contactHTML += `<div class="flex items-center gap-1.5 force-wrap"><i class="fab fa-linkedin resume-text-primary"></i> <span>${data.personal.linkedin}</span></div>`;
+            }
+
+            contactContainer.innerHTML = contactHTML;
+            // If empty, remove display styling to let CSS hide it or avoid gaps
+            contactContainer.style.display = contactHTML ? '' : 'none';
+
+
+            // --- 2. SMART SECTIONS ---
+            const toggle = (id, hasContent) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = hasContent ? '' : 'none';
+            };
+
+            // Profile
+            document.getElementById('preview-profile-title').textContent = data.personal.profileTitle || "Professional Profile";
+            document.getElementById('preview-profile').textContent = data.personal.profile;
+            toggle('sec-profile', data.personal.profile && data.personal.profile.trim().length > 0);
+
+            // Lists
+            const mapList = (id, arr, fn) => document.getElementById(id).innerHTML = arr.map(fn).join('');
+
+            mapList('preview-education-list', data.education, e => `
+            <div class="mb-3">
+                <p class="font-bold text-sm leading-tight force-wrap">${e.degree}</p>
+                <p class="text-xs font-semibold opacity-80 mt-0.5 force-wrap">${e.school}</p>
+                <p class="text-tiny italic opacity-60">${e.year}</p>
+            </div>`);
+            toggle('sec-education', data.education.length > 0);
+
+            mapList('preview-experience-list', data.experience, e => `
+            <div class="mb-3">
+                <div class="flex justify-between items-baseline mb-1">
+                    <h3 class="font-bold text-sm force-wrap">${e.role}</h3>
+                    <span class="text-tiny font-bold opacity-70 uppercase force-wrap">${e.company}</span>
+                </div>
+                <ul class="list-disc list-outside ml-4 text-xs opacity-80 space-y-1 force-wrap">
+                    ${e.description.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('')}
+                </ul>
+            </div>`);
+            toggle('sec-experience', data.experience.length > 0);
+
+            mapList('preview-projects-list', data.projects, p => `
+            <div class="mb-3">
+                <h3 class="font-bold text-sm mb-1 force-wrap">${p.title}</h3>
+                <ul class="list-disc list-outside ml-4 text-xs opacity-80 space-y-1 force-wrap">
+                    ${p.description.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('')}
+                </ul>
+            </div>`);
+            toggle('sec-projects', data.projects.length > 0);
+
+            mapList('preview-achievements-list', data.achievements, a => `
+            <div class="flex items-start gap-2 bg-gray-50 p-2 rounded border border-gray-100">
+                <i class="fas fa-check-circle mt-0.5 text-xs resume-text-primary"></i>
+                <div><p class="font-bold text-xs leading-tight force-wrap">${a.title}</p><p class="text-tiny opacity-70 mt-0.5 force-wrap">${a.description}</p></div>
+            </div>`);
+            toggle('sec-achievements', data.achievements.length > 0);
+
+            const skillsList = data.skills.split(',').filter(s => s.trim());
+            document.getElementById('preview-skills').innerHTML = skillsList.map(s => `<span class="bg-white px-1.5 py-0.5 rounded text-tiny font-semibold shadow-sm border border-gray-200 force-wrap">${s}</span>`).join('');
+            toggle('sec-skills', skillsList.length > 0);
+
+            const interestsList = data.interests.split(',').filter(s => s.trim());
+            document.getElementById('preview-interests').innerHTML = interestsList.map(s => `<li class="flex items-center gap-1.5 force-wrap"><div class="w-1 h-1 bg-current rounded-full"></div>${s}</li>`).join('');
+            toggle('sec-interests', interestsList.length > 0);
+        }
+
+        window.onload = function () {
+            renderForm();
+            renderResume();
+            // Force Original layout on load
+            setTemplate('template-original', document.querySelector('.template-btn:last-child'));
+        };
+    </script>
+</body>
+
+</html>
